@@ -10,4 +10,4 @@ docker build -t (image-name) .
 
 docker-compose up -d
 
-# The game will be accessible at http://(your-server-ip):80.
+# The game will be accessible at http://(your-server-ip):80
