@@ -6,7 +6,7 @@ pipeline {
             steps {
                 script {
                     // Check if repository directory exists
-                    if (!fileExists('/var/lib/jenkins/workspace/2048_deployment/2048_game_deployment')) {
+                    if (!fileExists('/var/lib/jenkins/workspace/game-deploy/game_deployment_cicd')) {
                         sh 'git clone https://github.com/kloudskart/game_deployment_cicd.git'
                     } else {
                         echo 'Repository already cloned'
@@ -17,19 +17,19 @@ pipeline {
         
         stage('Build') {
             steps {
-                dir('/var/lib/jenkins/workspace/2048_deployment/2048_game_deployment') {
-                    sh 'docker build -t myapp .'
+                dir('/var/lib/jenkins/workspace/game-deploy/game_deployment_cicd') {
+                    sh 'docker build -t mygameimg .'
                 }
             }
         }
         
         stage('Deploy') {
             steps {
-                dir('/var/lib/jenkins/workspace/2048_deployment/2048_game_deployment') {
+                dir('/var/lib/jenkins/workspace/game-deploy/game_deployment_cicd') {
                     script {
                         sh 'docker stop myapp || true'
                         sh 'docker rm myapp || true'
-                        sh 'docker run -d -p 80:80 --name myapp myapp'
+                        sh 'docker run -d -p 80:80 --name myapp mygameimg'
                     }
                 }
             }
@@ -37,9 +37,9 @@ pipeline {
         
         stage('Test') {
             steps {
-                dir('/var/lib/jenkins/workspace/2048_deployment/2048_game_deployment') {
+                dir('/var/lib/jenkins/workspace/game-deploy/game_deployment_cicd') {
                     script {
-                        def ec2PrivateIP = sh(returnStdout: true, script: "curl -s http://169.254.169.254/latest/meta-data/local-ipv4").trim()
+                        def ec2PrivateIP = sh(returnStdout: true, script: "curl -s http://172.31.45.104/latest/meta-data/local-ipv4").trim()
                         sh "curl -s http://${ec2PrivateIP}:80" // Make a GET request to the application
                         sh "curl -s http://${ec2PrivateIP}:80 | grep '2048'" // Verify that the response contains "2048"
                     }
