@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Clone') {
+            steps {
+                script {
+                    // Check if repository directory exists
+                    if (!fileExists('/var/lib/jenkins/workspace/2048_deployment/2048_game_deployment')) {
+                        sh 'git clone https://github.com/Dhananjaykul/2048_game_deployment.git'
+                    } else {
+                        echo 'Repository already cloned'
+                    }
+                }
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                dir('/var/lib/jenkins/workspace/2048_deployment/2048_game_deployment') {
+                    sh 'docker build -t myapp .'
+                }
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                dir('/var/lib/jenkins/workspace/2048_deployment/2048_game_deployment') {
+                    script {
+                        sh 'docker stop myapp || true'
+                        sh 'docker rm myapp || true'
+                        sh 'docker run -d -p 80:80 --name myapp myapp'
+                    }
+                }
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                dir('/var/lib/jenkins/workspace/2048_deployment/2048_game_deployment') {
+                    script {
+                        def ec2PrivateIP = sh(returnStdout: true, script: "curl -s http://169.254.169.254/latest/meta-data/local-ipv4").trim()
+                        sh "curl -s http://${ec2PrivateIP}:80" // Make a GET request to the application
+                        sh "curl -s http://${ec2PrivateIP}:80 | grep '2048'" // Verify that the response contains "2048"
+                    }
+                }
+            }
+        }
+    }
+}
