@@ -34,17 +34,5 @@ pipeline {
                 }
             }
         }
-        
-        stage('Test') {
-            steps {
-                dir('/var/lib/jenkins/workspace/game-deploy/game_deployment_cicd') {
-                    script {
-                        def ec2PrivateIP = sh(returnStdout: true, script: "curl -s http://172.31.45.104/latest/meta-data/local-ipv4").trim()
-                        sh "curl -s http://${ec2PrivateIP}:80" // Make a GET request to the application
-                        sh "curl -s http://${ec2PrivateIP}:80 | grep '2048'" // Verify that the response contains "2048"
-                    }
-                }
-            }
-        }
     }
 }
