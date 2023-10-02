@@ -19,3 +19,5 @@ Deploying the 2048 game using Jenkins and Docker showcases the power of automati
 For more information, refer to the individual files in the project repository.
 
 🌟 Enjoy playing the 2048 game and exploring the wonders of CI/CD with Jenkins! 🌟
+
+# code credit : gabriele ✌️🙋‍♂️
