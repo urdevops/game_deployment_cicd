@@ -7,7 +7,7 @@ pipeline {
                 script {
                     // Check if repository directory exists
                     if (!fileExists('/var/lib/jenkins/workspace/game-deploy/game_deployment_cicd')) {
-                        sh 'git clone https://github.com/kloudskart/game_deployment_cicd.git'
+                        sh 'git clone https://github.com/urdevops/game_deployment_cicd.git'
                     } else {
                         echo 'Repository already cloned'
                     }
